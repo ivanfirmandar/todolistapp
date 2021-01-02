@@ -58,9 +58,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 quereis.setPenting(false);
             }
             quereis.setKegiatan(cursor.getString(cursor.getColumnIndex(COLUMN_KEGIATAN)));
-            Log.d("Status ",String.valueOf(quereis.isStatus()));
-            Log.d("Kegiatan ",quereis.getKegiatan());
-            Log.d("Penting ",String.valueOf(quereis.isPenting()));
+//            Log.d("Status ",String.valueOf(quereis.isStatus()));
+//            Log.d("Kegiatan ",quereis.getKegiatan());
+//            Log.d("Penting ",String.valueOf(quereis.isPenting()));
             queries.add(quereis);
         }
         return queries;
@@ -73,5 +73,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 COLUMN_PENTING +
                 ") VALUES (" + status + ",'" + kegiatan + "'," + penting + ")";
         database.execSQL(SQLStmt);
+    }
+    public void updateData(int id, Boolean status,String kegiatan, Boolean penting){
+        SQLiteDatabase database = getWritableDatabase();
+        String SQLStmt = "UPDATE " + TABLE_NAME + " SET " +
+                COLUMN_STATUS + " = " + status + "," +
+                COLUMN_KEGIATAN + " = '" + kegiatan + "'," +
+                COLUMN_PENTING + " = " + penting + " WHERE "+
+                COLUMN_ID + " = " + id;
+        database.execSQL(SQLStmt);
+
     }
 }
