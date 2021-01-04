@@ -51,6 +51,7 @@ public class EnterList extends AppCompatActivity {
                    Toast.makeText(EnterList.this,"Data Berhasil Masuk",Toast.LENGTH_SHORT).show();
                    Log.d("Database","Database Berhasil Masuk");
                    db.close();
+                   startActivity(new Intent(EnterList.this,MainActivity.class));
                }catch (SQLiteException err){
                    Log.d("Error",err.toString());
                    Toast.makeText(EnterList.this,"Data Gagal Dimasukkan",Toast.LENGTH_SHORT).show();
@@ -71,7 +72,7 @@ public class EnterList extends AppCompatActivity {
     Queries inputHandler(){
         String input = activityInput.getText().toString();
         Queries query = new Queries();
-        query.setStatus(true);
+        query.setStatus(false);
         query.setKegiatan(input);
         query.setPenting(pentingKah);
 

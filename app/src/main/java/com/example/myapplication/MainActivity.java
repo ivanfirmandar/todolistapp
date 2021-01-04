@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity{
         listView = findViewById(R.id.listView);
         CustomAdapter adapter = new CustomAdapter(this,R.layout.adapterview,queries);
         listView.setAdapter(adapter);
+
         tambah = findViewById(R.id.tambah);
         tambah.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +40,6 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(intent);
             }
         });
-
     }
 
 }

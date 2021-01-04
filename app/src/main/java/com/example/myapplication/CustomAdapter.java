@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,8 +47,9 @@ public class CustomAdapter extends ArrayAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
         convertView = inflater.inflate(R.layout.adapterview,parent,false);
         ImageButton btnStatus = convertView.findViewById(R.id.statsuButton);
+        ImageButton btnDelete = convertView.findViewById(R.id.delete);
         TextView tvKegiatan = convertView.findViewById(R.id.kegiatan);
-        Button btnPenting = convertView.findViewById(R.id.pentingButton);
+        ImageButton btnPenting = convertView.findViewById(R.id.pentingButton);
         Log.d("Status", "Status : " + status[0]);
         if (!status[0]){
             btnStatus.setImageResource(R.drawable.unchecked_list);
@@ -54,11 +58,9 @@ public class CustomAdapter extends ArrayAdapter {
             tvKegiatan.setPaintFlags(tvKegiatan.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         if (!penting[0]){
-            btnPenting.setBackgroundColor(Color.RED);
-            btnPenting.setText("BIASA");
+            btnPenting.setImageResource(R.drawable.ic_baseline_push_pin_241);
         }else{
-            btnPenting.setBackgroundColor(Color.BLUE);
-            btnPenting.setText("PENTING");
+            btnPenting.setImageResource(R.drawable.penting);
         }
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +69,21 @@ public class CustomAdapter extends ArrayAdapter {
                 intent.putExtra("id",queries.get(position).getId());
                 intent.putExtra("activity",queries.get(position).getKegiatan());
                 context.startActivity(intent);
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    DatabaseHandler db = new DatabaseHandler(context);
+                    db.deleteData(id);
+                    db.close();
+                    Toast.makeText(context,"Berhasil Menghapus",Toast.LENGTH_SHORT).show();
+                    queries.remove(position);
+                    notifyDataSetChanged();
+                }catch (SQLiteException err){
+                    Toast.makeText(context,"Gagal Menghapus",Toast.LENGTH_SHORT).show();
+                }
             }
         });
         btnStatus.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +114,45 @@ public class CustomAdapter extends ArrayAdapter {
                                         tvKegiatan.setPaintFlags(tvKegiatan.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                                         db.updateData(id, false,kegiatan,penting[0]);
                                         status[0] = false;
+                                        Log.d("change", "Changed to false");
+                                    }catch (SQLiteException err){
+                                        Log.d("Error", "Gagal Diubah");
+                                    }
+
+                                }
+                            }
+                        });
+                        db.close();
+                    }
+                }).start();
+            }
+        });
+        btnPenting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Clicked1","true");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DatabaseHandler db = new DatabaseHandler(context);
+                        Handler bst = new Handler(Looper.getMainLooper());
+                        bst.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!penting[0]){
+                                    try {
+                                        btnPenting.setImageResource(R.drawable.penting);
+                                        db.updateData(id, status[0],kegiatan,true);
+                                        penting[0] = true;
+                                        Log.d("change", "Changed to true");
+                                    }catch (SQLiteException err){
+                                        Log.d("Error", "Gagal Diubah");
+                                    }
+                                }else {
+                                    try {
+                                        btnPenting.setImageResource(R.drawable.ic_baseline_push_pin_241);
+                                        db.updateData(id, status[0],kegiatan,false);
+                                        penting[0] = false;
                                         Log.d("change", "Changed to false");
                                     }catch (SQLiteException err){
                                         Log.d("Error", "Gagal Diubah");

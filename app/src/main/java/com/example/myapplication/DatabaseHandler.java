@@ -82,6 +82,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 COLUMN_PENTING + " = " + penting + " WHERE "+
                 COLUMN_ID + " = " + id;
         database.execSQL(SQLStmt);
-
+    }
+    public void deleteData(int id){
+        SQLiteDatabase database = getWritableDatabase();
+        String SQLStmt = "DELETE FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + "=" + id;
+        database.execSQL(SQLStmt);
     }
 }
